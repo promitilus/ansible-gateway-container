@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  remote-satellite-base:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      GATEWAY_REMOTE_HOST:
+      GATEWAY_USE_ROUTER:
+    volumes:
+      - "config_volume:/config"
+      - "data_volume:/data"
+volumes:
+  config_volume:
+  data_volume:
