@@ -23,6 +23,7 @@ Host *
    ControlMaster yes
    ControlPath /tmp/.ssh-mux-%r@%h:%p
    ControlPersist 3600
+   ExitOnForwardFailure yes
    ForwardAgent no
    ForwardX11 no
    ForwardX11Trusted no
