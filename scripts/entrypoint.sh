@@ -15,9 +15,15 @@ case "$1" in
 		exec "$@";
 		;;
 	"ansible" | "ansible-playbook" )
+		if [ -z "$GATEWAY_REMOTE_HOST" ];
+		then
+			echo "ERROR: Variable GATEWAY_REMOTE_HOST not defined !" >&2;
+			exit 1;
+		fi;
+
 		# discover our gateway port (from SRV record)
 		srv_port="";
-		if [ -n "$GATEWAY_REMOTE_HOST" ];
+		if [ -z "$GATEWAY_USER" ];
 		then
 			prefix="_socks._tcp";
 			srv=`__dns_srv_resolve "$prefix.$GATEWAY_REMOTE_HOST" | grep -m 1 "^$prefix"`;
@@ -28,23 +34,32 @@ case "$1" in
 			then
 				echo "WARNING: Failed to discover forward configuration !" >&2;
 			fi;
-		else
-			echo "ERROR: Variable GATEWAY_REMOTE_HOST not defined !" >&2;
-			exit 1;
+
+			export GATEWAY_USER="$srv_user";
+			export GATEWAY_PORT="$srv_port";
 		fi;
 
-		# vars
-		export GATEWAY_USER="$srv_user";
-		export GATEWAY_PORT="$srv_port";
-
 		# process hook
+		declare -a GATEWAY_ARGS;
 		if [ -x "/config/ansible.hook.sh" ];
 		then
 			source /config/ansible.hook.sh;
+		else
+			if [ -n "$GATEWAY_PORT" ];
+			then
+				GATEWAY_ARGS+=(-o "RemoteForward=$GATEWAY_PORT");
+			fi;
+		fi;
+
+		# check variables
+		if [ -z "$GATEWAY_USER" ];
+		then
+			echo "ERROR: Variable GATEWAY_USER not defined !" >&2;
+			exit 1;
 		fi;
 
 		# exec now
-		exec ${GATEWAY_SSH:-ssh} -o "RemoteForward=$GATEWAY_PORT" -R "$(($GATEWAY_PORT+1)):localhost:1080" "$GATEWAY_USER@$GATEWAY_REMOTE_HOST" -- "$@";
+		exec ${GATEWAY_SSH:-ssh} "${GATEWAY_ARGS[@]}" "$GATEWAY_USER@$GATEWAY_REMOTE_HOST" -- "$@";
 		;;
 	"" )
 		echo "COMMAND MISSING !" >&2;
