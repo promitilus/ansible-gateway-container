@@ -20,9 +20,9 @@ Host *
    BatchMode yes
    ConnectionAttempts 3
    ConnectTimeout 31
-   ControlMaster yes
+   ControlMaster auto
    ControlPath /tmp/.ssh-mux-%r@%h:%p
-   ControlPersist 3600
+   ControlPersist 901
    ExitOnForwardFailure yes
    ForwardAgent no
    ForwardX11 no
@@ -32,13 +32,13 @@ Host *
    IdentitiesOnly yes
    IPQoS throughput
    PasswordAuthentication no
-#   RemoteForward 9999
    SendEnv GATEWAY_* ANSIBLE_*
 #   ServerAliveCountMax
 #   ServerAliveInterval
    StrictHostKeyChecking accept-new
    UpdateHostKeys yes
    UserKnownHostsFile /data/known_hosts
+   ForwardX11 no
 
 # additional configs
 Include /config/*.ssh_config

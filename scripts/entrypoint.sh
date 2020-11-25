@@ -7,6 +7,9 @@ function __dns_srv_resolve() {
 
 case "$1" in
 	"--init" )
+		tail -f /dev/null;
+		;;
+	"--init-danted" )
 		# START DANTED AS SERVICE
 		service danted start;
 		tail -f /dev/null;
