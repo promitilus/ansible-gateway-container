@@ -17,7 +17,7 @@ case "$1" in
 	"exec" )
 		exec "$@";
 		;;
-	"ansible" | "ansible-playbook" )
+	"ansible" | "ansible-playbook" | "ansiblegw" )
 		if [ -z "$GATEWAY_REMOTE_HOST" ];
 		then
 			echo "ERROR: Variable GATEWAY_REMOTE_HOST not defined !" >&2;
